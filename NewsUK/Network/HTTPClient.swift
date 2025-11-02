@@ -9,7 +9,8 @@ import Foundation
 
 protocol BaseHTTPClient {
     var service: HTTPService { get }
-    func execute<T: Codable>(request: URLRequest) async throws -> T
+    
+    func execute<T: Codable>(request: URLRequest, decoder: JSONDecoder) async throws -> T
 }
 
 final class HTTPClient: BaseHTTPClient {
@@ -22,7 +23,7 @@ final class HTTPClient: BaseHTTPClient {
     }
     
     // MARK: - Public
-    func execute<T: Codable>(request: URLRequest) async throws -> T {
+    func execute<T: Codable>(request: URLRequest, decoder: JSONDecoder = .init()) async throws -> T {
         let (data, response): (Data, URLResponse)
         
         do {
@@ -41,7 +42,7 @@ final class HTTPClient: BaseHTTPClient {
         
         let apiResponse: RequestResponse<T>
         do {
-            apiResponse = try JSONDecoder().decode(RequestResponse<T>.self, from: data)
+            apiResponse = try decoder.decode(RequestResponse<T>.self, from: data)
         } catch {
             throw NetworkError.decodingFailed(error)
         }
