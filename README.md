@@ -34,3 +34,4 @@ https://api.stackexchange.com/2.2/users?page=1&pagesize=20&order=desc&sort=reput
 - Image caching: Images are currently fetched each time - could add a cache provider which stores fetched images and reduces network requests
 - Task keying: Image tasks are keyed by row index, instead tasks could be fetched by imageURL which with image caching could substantially reduce network load and load times in general
 - UI polish: UI is a basic implementation, sufficient enough to be usable for this task
+- **NB** If image fetch resulted in `nil` then the associated task/cell will always have nil value for image. This could be worked around by using an image cache provider and some refactoring.
