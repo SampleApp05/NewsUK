@@ -41,8 +41,6 @@ final class UsersViewController: UIViewController, UITableViewDelegate {
     
     // MARK: - Private
     private func configure() {
-        title = "Users"
-        
         configureContainerStackView()
         configureLoadingView()
         configureErrorView()
