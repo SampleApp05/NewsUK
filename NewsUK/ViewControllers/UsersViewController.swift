@@ -34,6 +34,7 @@ final class UsersViewController: UIViewController, UITableViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        view.backgroundColor = .systemBackground
         configure()
         fetchUsers()
     }
