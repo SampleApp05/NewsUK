@@ -9,6 +9,10 @@ import Foundation
 @testable import NewsUK
 
 final class MockFollowService: BaseFollowListService {
+    func fetchFollowList() {
+        
+    }
+    
     var followList: Set<String> = []
     
     func isFollowing(userId: String) -> Bool {
@@ -21,5 +25,9 @@ final class MockFollowService: BaseFollowListService {
     
     func unfollow(userId: String) {
         followList.remove(userId)
+    }
+    
+    func unfollowAll() {
+        followList = []
     }
 }

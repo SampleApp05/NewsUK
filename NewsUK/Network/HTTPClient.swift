@@ -10,6 +10,7 @@ import Foundation
 protocol BaseHTTPClient {
     var service: HTTPService { get }
     
+    func execute(request: URLRequest) async throws -> Data
     func execute<T: Codable>(request: URLRequest, decoder: JSONDecoder) async throws -> T
 }
 
@@ -23,7 +24,7 @@ final class HTTPClient: BaseHTTPClient {
     }
     
     // MARK: - Public
-    func execute<T: Codable>(request: URLRequest, decoder: JSONDecoder = .init()) async throws -> T {
+    func execute(request: URLRequest) async throws -> Data {
         let (data, response): (Data, URLResponse)
         
         do {
@@ -40,21 +41,16 @@ final class HTTPClient: BaseHTTPClient {
             throw NetworkError.statusCode(httpResponse.statusCode)
         }
         
-        let apiResponse: RequestResponse<T>
+        return data
+    }
+    
+    func execute<T: Codable>(request: URLRequest, decoder: JSONDecoder = .init()) async throws -> T {
+        let data = try await execute(request: request)
+        
         do {
-            apiResponse = try decoder.decode(RequestResponse<T>.self, from: data)
+            return try decoder.decode(T.self, from: data)
         } catch {
             throw NetworkError.decodingFailed(error)
         }
-        
-        guard Self.successStatusRange.contains(apiResponse.status) else {
-            throw RequestError.internalAPI(code: apiResponse.status, message: apiResponse.message)
-        }
-        
-        guard let responseData = apiResponse.data else {
-            throw RequestError.missingData
-        }
-        
-        return responseData
     }
 }

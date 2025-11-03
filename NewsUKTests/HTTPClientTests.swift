@@ -27,8 +27,7 @@ struct RESTClientTests {
     @Test
     func testExecute_SuccessfulResponse_ReturnsDecodedData() async throws {
         let expected = TestData(value: "hello")
-        let response = RequestResponse(status: 200, message: nil, data: expected)
-        service.result = .success(try! JSONEncoder().encode(response))
+        service.result = .success(try! JSONEncoder().encode(expected))
 
         let request = URLRequest(url: URL(string: "https://test.com")!)
         let result: TestData = try await client.execute(request: request)
@@ -59,8 +58,8 @@ struct RESTClientTests {
     @Test
     func testExecute_InvalidData_ThrowsDecodingError() async {
         let invalidData = InvalidData()
-        let response = RequestResponse(status: 200, message: nil, data: invalidData)
-        service.result = .success(try! JSONEncoder().encode(response))
+        //let response = RequestResponse(status: 200, message: nil, data: invalidData)
+        service.result = .success(try! JSONEncoder().encode(invalidData))
         
         let request = URLRequest(url: URL(string: "https://test.com")!)
         await #expect {
@@ -86,14 +85,6 @@ struct RESTClientTests {
                 return false
             }
             return true
-        }
-    }
-    
-    final class NonHTTPResponseService: HTTPService {
-        func execute(request: URLRequest) async throws -> (Data, URLResponse) {
-            let url = request.url ?? URL(string: "https://example.com")!
-            let response = URLResponse(url: url, mimeType: "application/json", expectedContentLength: 2, textEncodingName: nil)
-            return (Data("{}".utf8), response)
         }
     }
     
@@ -125,41 +116,6 @@ struct RESTClientTests {
             _ = try await client.execute(request: request) as TestData
         } throws: { error in
             guard case .decodingFailed = (error as? NetworkError) else { return false }
-            return true
-        }
-    }
-    
-    @Test
-    func testExecute_InternalAPIErrorInEnvelope_ThrowsRequestErrorInternalAPI() async {
-        let response = RequestResponse<TestData>(status: 500, message: "Server error", data: nil)
-        service.result = .success(try! JSONEncoder().encode(response))
-        
-        let request = URLRequest(url: URL(string: "https://test.com")!)
-        await #expect {
-            _ = try await client.execute(request: request) as TestData
-        } throws: { error in
-            guard let requestError = error as? RequestError,
-                  case .internalAPI(code: 500, message: let message) = requestError,
-                  message == "Server error" else {
-                return false
-            }
-            return true
-        }
-    }
-    
-    @Test
-    func testExecute_MissingDataInEnvelope_ThrowsRequestErrorMissingData() async {
-        let response = RequestResponse<TestData>(status: 200, message: nil, data: nil)
-        service.result = .success(try! JSONEncoder().encode(response))
-        
-        let request = URLRequest(url: URL(string: "https://test.com")!)
-        await #expect {
-            _ = try await client.execute(request: request) as TestData
-        } throws: { error in
-            guard let requestError = error as? RequestError,
-                  case .missingData = requestError else {
-                return false
-            }
             return true
         }
     }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct UserResponse: Codable, Equatable {
-    let userId: String
+struct UserResponse: Codable, Equatable, Hashable, Sendable {
+    let userId: Int
     let profileImage: URL
     let displayName: String
     let reputation: Int
