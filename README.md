@@ -15,7 +15,7 @@ The app follows an **MVVM** architecture with protocol-based abstractions for te
 ### Components
 - **`UsersViewController`** – View layer which manages UI and states (loading/error/empty/data). Uses diffable data source for data presentation.
 - **`UsersViewModel (via BaseUsersViewModel)`** – Business logic and state. Fetches users, maps network models to UI models, manages follow/unfollow through a service, caches image tasks, and exposes data snapshot to be used by table view data source
-**`HTTPClient (BaseHTTPClient + HTTPService)`** - Networking abstraction around URLSession. Decodes JSON with a configurable JSONDecoder.
+- **`HTTPClient (BaseHTTPClient + HTTPService)`** - Networking abstraction around URLSession. Decodes JSON with a configurable JSONDecoder.
 - **`FollowListService (view BaseFollowListService)`** – Local persistence of follow/unfollow status using UserDefaults.
 ### Models
 - `UsersResponse`, `UserResponse` - Network models matching StackExchange API.
